@@ -1,0 +1,21 @@
+# Extracted DHCP declarations from the provided CORE topology.
+
+# R1
+subnet 135.232.27.0 netmask 255.255.255.0 {
+	  pool {
+	    range 135.232.27.127 135.232.27.254;
+	    default-lease-time 36000;
+	    option routers 135.232.27.1;
+	    option domain-name-servers 135.232.159.10;
+	    option domain-name "talos.edu";
+	  }
+
+# minerva
+subnet 120.126.127.0 netmask 255.255.255.0 {
+	  pool {
+	    range 120.126.127.20 120.126.127.254;
+	    default-lease-time 36000;
+	    option routers 120.126.127.1;
+	    option domain-name-servers 120.126.127.10;
+	    option domain-name "delos.edu";
+	  }
