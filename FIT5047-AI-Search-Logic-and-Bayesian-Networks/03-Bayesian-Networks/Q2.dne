@@ -1,0 +1,190 @@
+// ~->[DNET-1]->~
+
+// File created by an unlicensed user using Netica 7.01 on Oct 16, 2025 at 08:57:30 UTC.
+
+bnet Q2 {
+AutoCompile = TRUE;
+autoupdate = TRUE;
+whenchanged = 1760605050;
+
+visual V1 {
+	defdispform = BELIEFBARS;
+	nodelabeling = TITLE;
+	NodeMaxNumEntries = 50;
+	nodefont = font {shape= "Arial"; size= 9;};
+	linkfont = font {shape= "Arial"; size= 9;};
+	ShowLinkStrengths = 1;
+	windowposn = (26, 26, 1336, 576);
+	resolution = 72;
+	drawingbounds = (1278, 720);
+	showpagebreaks = FALSE;
+	usegrid = TRUE;
+	gridspace = (6, 6);
+	NodeSet Node {BuiltIn = 1; Color = 0x00e1e1e1;};
+	NodeSet Nature {BuiltIn = 1; Color = 0x00f8eed2;};
+	NodeSet Deterministic {BuiltIn = 1; Color = 0x00d3caa6;};
+	NodeSet Finding {BuiltIn = 1; Color = 0x00c8c8c8;};
+	NodeSet Constant {BuiltIn = 1; Color = 0x00ffffff;};
+	NodeSet ConstantValue {BuiltIn = 1; Color = 0x00ffffb4;};
+	NodeSet Utility {BuiltIn = 1; Color = 0x00ffbdbd;};
+	NodeSet Decision {BuiltIn = 1; Color = 0x00dee8ff;};
+	NodeSet Documentation {BuiltIn = 1; Color = 0x00f0fafa;};
+	NodeSet Title {BuiltIn = 1; Color = 0x00ffffff;};
+	PrinterSetting A {
+		margins = (1270, 1270, 1270, 1270);
+		};
+	};
+
+node OC {
+	discrete = TRUE;
+	states = (YES, NO);
+	kind = NATURE;
+	chance = CHANCE;
+	parents = ();
+	probs = 
+		// YES          NO           
+		  (0.7,         0.3);
+	whenchanged = 1760339159;
+	belief = (0.7, 0.3);
+	visual V1 {
+		center = (306, 240);
+		height = 3;
+		};
+	};
+
+node Trav {
+	discrete = TRUE;
+	states = (YES, NO);
+	kind = NATURE;
+	chance = CHANCE;
+	parents = ();
+	probs = 
+		// YES          NO           
+		  (0.05,        0.95);
+	whenchanged = 1760339188;
+	belief = (0.05, 0.95);
+	visual V1 {
+		center = (306, 42);
+		height = 1;
+		};
+	};
+
+node Fraud {
+	discrete = TRUE;
+	states = (YES, NO);
+	kind = NATURE;
+	chance = CHANCE;
+	parents = (Trav);
+	probs = 
+		// YES          NO            // Trav 
+		  (0.01,        0.99,         // YES  
+		   0.004,       0.996);       // NO   ;
+	whenchanged = 1760339285;
+	belief = (0.0043, 0.9957);
+	visual V1 {
+		center = (300, 138);
+		height = 6;
+		};
+	};
+
+node IP {
+	discrete = TRUE;
+	states = (YES, NO);
+	kind = NATURE;
+	chance = CHANCE;
+	parents = (Fraud, OC);
+	probs = 
+		// YES          NO            // Fraud OC  
+		  (0.02,        0.98,         // YES   YES 
+		   0.011,       0.989,        // YES   NO  
+		   0.01,        0.99,         // NO    YES 
+		   0.001,       0.999);       // NO    NO  ;
+	whenchanged = 1760339392;
+	belief = (0.007343, 0.992657);
+	visual V1 {
+		center = (528, 240);
+		height = 5;
+		};
+	};
+
+node CRP {
+	discrete = TRUE;
+	states = (YES, NO);
+	kind = NATURE;
+	chance = CHANCE;
+	parents = (OC);
+	probs = 
+		// YES          NO            // OC  
+		  (0.1,         0.9,          // YES 
+		   0.001,       0.999);       // NO  ;
+	whenchanged = 1760339413;
+	belief = (0.0703, 0.9297);
+	visual V1 {
+		center = (306, 342);
+		height = 4;
+		};
+	};
+
+node FP {
+	discrete = TRUE;
+	states = (YES, NO);
+	kind = NATURE;
+	chance = CHANCE;
+	parents = (Trav, Fraud);
+	probs = 
+		// YES          NO            // Trav Fraud 
+		  (0.9,         0.1,          // YES  YES   
+		   0.9,         0.1,          // YES  NO    
+		   0.1,         0.9,          // NO   YES   
+		   0.01,        0.99);        // NO   NO    ;
+	whenchanged = 1760339335;
+	belief = (0.05484199, 0.945158);
+	visual V1 {
+		center = (528, 138);
+		height = 2;
+		};
+	};
+
+node B {
+	discrete = TRUE;
+	states = (YES, NO);
+	kind = DECISION;
+	chance = DETERMIN;
+	parents = (FP, CRP, IP);
+	functable = 
+		                    // FP  CRP IP  
+		  (YES,             // YES YES YES 
+		   YES,             // YES YES NO  
+		   YES,             // YES NO  YES 
+		   YES,             // YES NO  NO  
+		   NO,              // NO  YES YES 
+		   NO,              // NO  YES NO  
+		   NO,              // NO  NO  YES 
+		   NO);             // NO  NO  NO  ;
+	whenchanged = 1760604753;
+	visual V1 {
+		center = (792, 336);
+		height = 7;
+		};
+	};
+
+node U {
+	discrete = FALSE;
+	measure = RATIO;
+	kind = UTILITY;
+	chance = DETERMIN;
+	parents = (Fraud, B);
+	functable = 
+		                 // Fraud B   
+		  (0,            // YES   YES 
+		   -1000,        // YES   NO  
+		   -10,          // NO    YES 
+		   5);           // NO    NO  ;
+	whenchanged = 1760344170;
+	visual V1 {
+		center = (672, 36);
+		height = 8;
+		};
+	};
+ElimOrder = (Trav, OC, Fraud, B, IP, CRP, FP);
+};
